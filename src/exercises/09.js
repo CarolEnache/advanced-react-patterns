@@ -26,8 +26,9 @@ class Toggle extends React.Component {
       // property and return an object only if the state changes
       // 💰 to remove the `type`, you can destructure the changes:
       // `{type, ...c}`
-      return Object.keys(reducedChanges).length
-        ? reducedChanges
+      const { type, ...c } = reducedChanges;
+      return Object.keys(c).length
+        ? c
         : null
     }, callback)
   }
@@ -37,16 +38,18 @@ class Toggle extends React.Component {
       this.props.onReset(this.state.on),
     )
   // 🐨 accept a `type` property here and give it a default value
-  toggle = () =>
+  toggle = ({type = 'something more interesting'} = {type: 'SUDO @Keith'}) => {
+    console.log(type);
     this.internalSetState(
       // pass the `type` string to this object
-      ({on}) => ({on: !on}),
+      ({on}) => ({on: !on, type }),
       () => this.props.onToggle(this.state.on),
     )
+  }
   getTogglerProps = ({onClick, ...props} = {}) => ({
     // 🐨 change `this.toggle` to `() => this.toggle()`
     // to avoid passing the click event to this.toggle.
-    onClick: callAll(onClick, this.toggle),
+    onClick: callAll(onClick, () => this.toggle()),
     'aria-pressed': this.state.on,
     ...props,
   })
